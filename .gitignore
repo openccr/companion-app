@@ -1,0 +1,46 @@
+# Dart tool cache
+.dart_tool/
+.packages
+
+# Flutter generated
+.flutter-plugins
+.flutter-plugins-dependencies
+*.g.dart
+*.freezed.dart
+
+# Build output
+build/
+
+# iOS CocoaPods
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+
+# Android Gradle
+android/.gradle/
+android/local.properties
+android/key.properties
+**/android/app/google-services.json
+
+# macOS
+macos/Pods/
+
+# Coverage
+coverage/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*~
+*.orig
+*.rej
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code
+.claude/
