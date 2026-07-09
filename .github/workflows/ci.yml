@@ -46,9 +46,49 @@ jobs:
       - run: flutter pub get
       - run: flutter test
 
+  linux:
+    name: Linux build
+    needs: test
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:flutter-3.35.5
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      - run: flutter build linux --debug
+
+  macos:
+    name: macOS build
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter build macos --debug
+
+  windows:
+    name: Windows build
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter build windows --debug
+
   android:
     name: Android build
-    needs: lint
+    needs: linux
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}:flutter-3.35.5
@@ -63,23 +103,9 @@ jobs:
       - name: Build App Bundle (debug)
         run: flutter build appbundle --debug
 
-  linux:
-    name: Linux build
-    needs: lint
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/${{ github.repository }}:flutter-3.35.5
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - run: flutter pub get
-      - run: flutter build linux --debug
-
   ios:
     name: iOS build
-    needs: lint
+    needs: macos
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,29 +115,3 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter build ios --debug --no-codesign
-
-  macos:
-    name: macOS build
-    needs: lint
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-      - run: flutter pub get
-      - run: flutter build macos --debug
-
-  windows:
-    name: Windows build
-    needs: lint
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-      - run: flutter pub get
-      - run: flutter build windows --debug
