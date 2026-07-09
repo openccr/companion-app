@@ -1,6 +1,10 @@
 # Dart tool cache
 .dart_tool/
 .packages
+.pub-cache/
+
+# Gradle cache (workspace-local, used by CI)
+.gradle/
 
 # Flutter generated
 .flutter-plugins
