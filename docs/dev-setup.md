@@ -17,8 +17,8 @@ No Flutter SDK on the host. No Dart on the host.
 
 | Tool | Version |
 |------|---------|
-| Flutter | 3.35.5 |
-| Dart | 3.9.2 (bundled) |
+| Flutter | 3.44.5 |
+| Dart | 3.12.0 (bundled) |
 | Android SDK | 34 |
 | Java | 17 |
 
@@ -115,7 +115,7 @@ can run the containerised jobs.
    ```bash
    gh workflow run container.yml --ref main -f push=true
    ```
-3. Wait for image at `ghcr.io/openccr/companion-app:flutter-3.35.5`
+3. Wait for image at `ghcr.io/openccr/companion-app:flutter-3.44.5`
 4. Push to main or open a PR — `ci.yml` succeeds
 
 ---

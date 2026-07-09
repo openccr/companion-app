@@ -13,7 +13,7 @@ permissions:
   packages: read
 
 env:
-  FLUTTER_VERSION: "3.35.5"
+  FLUTTER_VERSION: "3.44.5"
 
 jobs:
   # ── Lint + Test ──────────────────────────────────────────────────────────────
@@ -83,13 +83,13 @@ jobs:
     needs: lint
     runs-on: windows-latest
     env:
-      CMAKE_GENERATOR: "Visual Studio 17 2022"
+      CMAKE_GENERATOR: "Visual Studio 18 2026"
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: false # temporary until we get it working on Windows
+          cache: true
           channel: 'stable'
           architecture: x64
       - uses: actions/cache@v5
@@ -97,9 +97,6 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\Pub\Cache
           key: pub-windows-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-
-      - run: |
-          flutter clean
-          if (Test-Path "windows/flutter/ephemeral") { Remove-Item -Recurse -Force windows/flutter/ephemeral }
       - run: flutter pub get
       - run: flutter build windows --debug
 

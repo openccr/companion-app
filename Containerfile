@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Copyright (c) 2026 openCCR contributors
 #
-# OCI build image: Flutter 3.35.5 + Android SDK 34 + Linux desktop deps
+# OCI build image: Flutter 3.44.5 + Android SDK 34 + Linux desktop deps
 # Build: podman build -t openccr-companion-build .
 # Run:   podman run --rm -v .:/workspace:Z openccr-companion-build flutter build apk
 
 FROM ubuntu:24.04
 
-ARG FLUTTER_VERSION=3.35.5
+ARG FLUTTER_VERSION=3.44.5
 ARG ANDROID_CMDTOOLS_VERSION=11076708
 ARG ANDROID_PLATFORM_VERSION=34
 ARG ANDROID_BUILD_TOOLS_VERSION=34.0.0

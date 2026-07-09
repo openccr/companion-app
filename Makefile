@@ -18,7 +18,7 @@
 #   make check        # quality gate (format + analyze + test)
 #   make build-apk    # Android APK
 
-IMAGE     ?= ghcr.io/openccr/companion-app:flutter-3.35.5
+IMAGE     ?= ghcr.io/openccr/companion-app:flutter-3.44.5
 RUNTIME   ?= podman
 SELINUX_Z ?=
 

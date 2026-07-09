@@ -19,7 +19,7 @@ Or directly (pub get and test must share one container instance):
 ```bash
 MSYS_NO_PATHCONV=1 podman run --rm \
   -v "$(pwd)":/workspace -w /workspace \
-  ghcr.io/openccr/companion-app:flutter-3.35.5 \
+  ghcr.io/openccr/companion-app:flutter-3.44.5 \
   bash -c "flutter pub get && flutter test"
 ```
 
@@ -93,7 +93,7 @@ Safety-critical — all cases must have tests:
 ```bash
 MSYS_NO_PATHCONV=1 podman run --rm \
   -v "$(pwd)":/workspace -w /workspace \
-  ghcr.io/openccr/companion-app:flutter-3.35.5 \
+  ghcr.io/openccr/companion-app:flutter-3.44.5 \
   bash -c "flutter pub get && flutter test --coverage"
 ```
 
