@@ -147,4 +147,6 @@ jobs:
           key: pub-macos-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-macos-
       - run: flutter pub get
+      - name: Deintegrate CocoaPods (Flutter 3.44.5 uses Swift Package Manager)
+        run: cd ios && pod deintegrate
       - run: flutter build ios --debug --no-codesign
