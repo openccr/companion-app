@@ -90,7 +90,8 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
-      - uses: ilammy/msvc-dev-cmd@v1
+          channel: 'stable'
+          architecture: x64
       - uses: actions/cache@v4
         with:
           path: ${{ env.LOCALAPPDATA }}\Pub\Cache
