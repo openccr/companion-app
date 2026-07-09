@@ -82,6 +82,8 @@ jobs:
     name: Windows build
     needs: lint
     runs-on: windows-latest
+    env:
+      CMAKE_GENERATOR: "Visual Studio 17 2022"
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
@@ -95,7 +97,9 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\Pub\Cache
           key: pub-windows-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-
-      - run: flutter clean
+      - run: |
+          flutter clean
+          if (Test-Path "windows/flutter/ephemeral") { Remove-Item -Recurse -Force windows/flutter/ephemeral }
       - run: flutter pub get
       - run: flutter build windows --debug
 
