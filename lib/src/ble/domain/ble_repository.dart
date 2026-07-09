@@ -28,4 +28,7 @@ abstract class BleRepository {
 
   /// Emits true when BLE adapter is enabled, false when disabled.
   Stream<bool> get adapterEnabled;
+
+  /// Returns OS-bonded openCCR devices (Android only; empty list on other platforms).
+  Future<List<BleDevice>> bondedDevices();
 }

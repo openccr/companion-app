@@ -119,6 +119,29 @@ class BleRepositoryImpl implements BleRepository {
   }
 
   @override
+  Future<List<BleDevice>> bondedDevices() async {
+    try {
+      final devices = await FlutterBluePlus.bondedDevices;
+      return devices
+          .where(
+            (d) => d.platformName.startsWith(BleConstants.deviceNamePrefix),
+          )
+          .map(
+            (d) => BleDevice(
+              id: d.remoteId.str,
+              name: d.platformName,
+              rssi: 0,
+              hasCompanion: true,
+            ),
+          )
+          .toList();
+    } catch (_) {
+      // bondedDevices is Android-only; other platforms return empty.
+      return [];
+    }
+  }
+
+  @override
   Stream<bool> get adapterEnabled => FlutterBluePlus.adapterState.map(
         (s) => s == BluetoothAdapterState.on,
       );

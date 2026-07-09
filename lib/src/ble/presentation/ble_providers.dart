@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:openccr_companion/src/ble/data/ble_repository_impl.dart';
+import 'package:openccr_companion/src/ble/domain/ble_device.dart';
 import 'package:openccr_companion/src/ble/domain/ble_pairing_result_code.dart';
 import 'package:openccr_companion/src/ble/domain/ble_pairing_state.dart';
 import 'package:openccr_companion/src/ble/domain/ble_repository.dart';
@@ -15,6 +16,12 @@ import 'package:openccr_companion/src/ble/domain/ble_scan_state.dart';
 final bleRepositoryProvider = Provider<BleRepository>(
   (ref) => BleRepositoryImpl(),
 );
+
+/// OS-bonded openCCR devices (Android only; empty on other platforms).
+/// Invalidate after a successful pairing to refresh the list.
+final knownDevicesProvider = FutureProvider<List<BleDevice>>((ref) {
+  return ref.watch(bleRepositoryProvider).bondedDevices();
+});
 
 // ---------------------------------------------------------------------------
 // Scan
