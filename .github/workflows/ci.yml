@@ -97,6 +97,7 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\Pub\Cache
           key: pub-windows-${{ hashFiles('pubspec.lock') }}
           restore-keys: pub-windows-
+      - run: flutter clean
       - run: flutter pub get
       - run: flutter build windows --debug
 
