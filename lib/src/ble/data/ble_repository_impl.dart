@@ -40,7 +40,7 @@ class BleRepositoryImpl implements BleRepository {
   @override
   Future<BleDeviceInfo> connect(String deviceId) async {
     final fbpDevice = BluetoothDevice.fromId(deviceId);
-    await fbpDevice.connect(autoConnect: false);
+    await fbpDevice.connect(license: License.nonprofit, autoConnect: false);
     _connected[deviceId] = fbpDevice;
 
     final services = await fbpDevice.discoverServices();
