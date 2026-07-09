@@ -1,0 +1,11 @@
+build/
+.dart_tool/
+ios/Pods/
+android/.gradle/
+macos/Pods/
+coverage/
+.git/
+.claude/
+.idea/
+*.g.dart
+*.freezed.dart

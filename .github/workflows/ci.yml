@@ -1,0 +1,113 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (c) 2026 openCCR contributors
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  FLUTTER_VERSION: "3.35.5"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:flutter-3.35.5
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      - name: Format check
+        run: dart format --set-exit-if-changed lib/ test/
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+
+  test:
+    name: Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:flutter-3.35.5
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      - run: flutter test
+
+  android:
+    name: Android build
+    needs: lint
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:flutter-3.35.5
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      - name: Build APK (debug)
+        run: flutter build apk --debug
+      - name: Build App Bundle (debug)
+        run: flutter build appbundle --debug
+
+  linux:
+    name: Linux build
+    needs: lint
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}:flutter-3.35.5
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      - run: flutter build linux --debug
+
+  ios:
+    name: iOS build
+    needs: lint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter build ios --debug --no-codesign
+
+  macos:
+    name: macOS build
+    needs: lint
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter build macos --debug
+
+  windows:
+    name: Windows build
+    needs: lint
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get
+      - run: flutter build windows --debug

@@ -20,15 +20,16 @@ Source of truth: [`docs/visual-standards.md`](docs/visual-standards.md).
 
 ## Code Quality
 
-Before every commit:
+Before every commit (all commands run inside container via `make`):
 
 ```bash
-dart format --set-exit-if-changed lib/ test/
-flutter analyze
-flutter test
+make check   # format-check + analyze + test
 ```
 
-All three must pass — zero diffs, zero warnings, zero failures.
+Must pass — zero diffs, zero warnings, zero failures.
+
+Never run `flutter` or `dart` on the host. Use `make` targets only.
+iOS / macOS / Windows native builds are the only exception (Apple/MS restriction — no container).
 
 - No `// ignore:` without rationale in the same comment
 - No hardcoded BLE UUIDs — use shared constants file
@@ -40,10 +41,10 @@ All three must pass — zero diffs, zero warnings, zero failures.
 
 | What | Where |
 |------|-------|
-| Colour tokens | `lib/theme/app_colors.dart` |
-| Text styles | `lib/theme/app_text_styles.dart` |
-| Spacing | `lib/theme/app_spacing.dart` |
-| Theme assembly | `lib/theme/app_theme.dart` |
+| Colour tokens | `lib/shared/theme/app_colors.dart` |
+| Text styles | `lib/shared/theme/app_text_styles.dart` |
+| Spacing | `lib/shared/theme/app_spacing.dart` |
+| Theme assembly | `lib/shared/theme/app_theme.dart` |
 | BLE constants | `lib/shared/constants/` (TBD) |
 
 ## Reference Docs

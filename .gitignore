@@ -5,8 +5,13 @@
 # Flutter generated
 .flutter-plugins
 .flutter-plugins-dependencies
+.metadata
 *.g.dart
 *.freezed.dart
+
+# Symbolication / obfuscation map (release builds)
+app.*.symbols
+app.*.map.json
 
 # Build output
 build/
@@ -32,6 +37,7 @@ coverage/
 # IDE / editor
 .vscode/
 .idea/
+*.iml
 *.swp
 *~
 *.orig
