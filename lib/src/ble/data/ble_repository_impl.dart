@@ -121,22 +121,24 @@ class BleRepositoryImpl implements BleRepository {
   @override
   Future<List<BleDevice>> bondedDevices() async {
     try {
-      final devices = await FlutterBluePlus.bondedDevices;
+      // systemDevices filters by service UUID — works cross-platform and does
+      // not rely on device name (which may be user-configured).
+      // Limitation: returns currently *connected* openCCR devices, not all
+      // bonded devices. Full bonded-device persistence requires SharedPreferences
+      // (tracked in docs/ble-pairing.md — "Not Implemented" table).
+      final devices =
+          await FlutterBluePlus.systemDevices([BleConstants.serviceUuid]);
       return devices
-          .where(
-            (d) => d.platformName.startsWith(BleConstants.deviceNamePrefix),
-          )
           .map(
             (d) => BleDevice(
               id: d.remoteId.str,
-              name: d.platformName,
+              name: d.platformName.isEmpty ? d.remoteId.str : d.platformName,
               rssi: 0,
               hasCompanion: true,
             ),
           )
           .toList();
     } catch (_) {
-      // bondedDevices is Android-only; other platforms return empty.
       return [];
     }
   }
@@ -147,20 +149,22 @@ class BleRepositoryImpl implements BleRepository {
       );
 
   BleDevice? _mapScanResult(ScanResult result) {
-    final name = result.device.platformName;
-    if (!name.startsWith(BleConstants.deviceNamePrefix) &&
-        !result.advertisementData.serviceUuids
-            .contains(BleConstants.serviceUuid)) {
-      return null;
-    }
-
+    // Identity: company ID 0xFFFF + protocol version 0x01 in manufacturer data.
+    // Name is NOT used — devices may have user-configured names.
+    // (startScan already filters by service UUID; this validates the mfr payload.)
     final mfr = result.advertisementData.manufacturerData;
     final mfrBytes = mfr[BleConstants.companyId];
+
+    if (mfrBytes == null ||
+        mfrBytes.isEmpty ||
+        mfrBytes[0] != BleConstants.protocolVersion) {
+      return null;
+    }
 
     bool hasCompanion = false;
     String? firmwareVersion;
 
-    if (mfrBytes != null && mfrBytes.length >= 5) {
+    if (mfrBytes.length >= 5) {
       final major = mfrBytes[1];
       final minor = mfrBytes[2];
       final patch = mfrBytes[3];
@@ -168,6 +172,7 @@ class BleRepositoryImpl implements BleRepository {
       hasCompanion = (mfrBytes[4] & 0x01) != 0;
     }
 
+    final name = result.device.platformName;
     return BleDevice(
       id: result.device.remoteId.str,
       name: name.isEmpty ? result.device.remoteId.str : name,

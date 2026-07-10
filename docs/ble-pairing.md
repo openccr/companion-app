@@ -78,6 +78,8 @@ Full protocol spec: `../docs/ble/` (repository sibling).
 
 **`maybePop` for auto-pop** — `PairingScreen` uses `Navigator.maybePop()` (no-op when root route) rather than `pop()` to avoid crash in tests and edge cases.
 
+**Device identity by service UUID, not name** — `BleConstants.deviceNamePrefix` (`openCCR-`) exists for human reference only; it is NOT used in scan or device-list filtering. `startScan` filters via `withServices: [serviceUuid]`; `_mapScanResult` validates by company ID `0xFFFF` + protocol version `0x01` from manufacturer data. `bondedDevices` uses `FlutterBluePlus.systemDevices([serviceUuid])`. Names may be freely user-configured.
+
 **Navigation is imperative** — uses `Navigator.push`. When `go_router` is introduced, replace device-tile tap and success auto-pop with typed routes.
 
 ---
@@ -109,5 +111,6 @@ Features building on this layer (PO₂, alarms, dive log, OTA, settings):
 | Background BLE reconnect | Requires foreground service on Android; not scoped |
 | Re-pairing UX | `FAIL_ALREADY_PAIRED` → silent success; needs explicit flow |
 | Linux / Windows BLE | flutter_blue_plus experimental on these platforms; no test coverage |
+| Bonded-device persistence | `bondedDevices()` returns currently *connected* openCCR devices via `systemDevices`; does not enumerate all previously bonded devices. Full persistence requires `shared_preferences` (store paired IDs after successful pairing). |
 | OTA update service | Separate UUID namespace; design pending |
 | Riverpod code-gen | Using manual `StateNotifierProvider`; migrate when `riverpod_annotation` is enabled |
