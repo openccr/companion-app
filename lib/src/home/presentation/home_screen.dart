@@ -31,6 +31,8 @@ abstract final class HomeScreenKeys {
       ValueKey<String>('home_known_tile_$id');
   static ValueKey<String> scanDeviceTile(String id) =>
       ValueKey<String>('home_scan_tile_$id');
+  static ValueKey<String> foreignBondTile(String id) =>
+      ValueKey<String>('home_foreign_bond_tile_$id');
 }
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -449,9 +451,13 @@ class _ScanResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final unpaired = devices.where((d) => !knownIds.contains(d.id)).toList();
+    final nonKnown = devices.where((d) => !knownIds.contains(d.id)).toList();
+    // Split per spec: hasCompanion=0 → pair flow; hasCompanion=1 (not bonded
+    // to this app) → foreign bond warning (do not offer Pair button).
+    final toNewPair = nonKnown.where((d) => !d.hasCompanion).toList();
+    final foreignBond = nonKnown.where((d) => d.hasCompanion).toList();
 
-    if (unpaired.isEmpty) {
+    if (toNewPair.isEmpty && foreignBond.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Text(
@@ -462,7 +468,10 @@ class _ScanResults extends StatelessWidget {
     }
 
     return Column(
-      children: unpaired.map((d) => _ScanDeviceTile(device: d)).toList(),
+      children: [
+        ...toNewPair.map((d) => _ScanDeviceTile(device: d)),
+        ...foreignBond.map((d) => _ForeignBondTile(device: d)),
+      ],
     );
   }
 }
@@ -521,6 +530,44 @@ class _ScanDeviceTile extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
               ),
               child: const Text('Pair'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ForeignBondTile extends StatelessWidget {
+  const _ForeignBondTile({required this.device});
+
+  final BleDevice device;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: HomeScreenKeys.foreignBondTile(device.id),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      padding: const EdgeInsets.all(AppSpacing.base),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.link_off, color: AppColors.textMuted, size: 18),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(device.name, style: AppTextStyles.labelLg),
+                Text(
+                  'Paired with a different app',
+                  style: AppTextStyles.labelSm
+                      .copyWith(color: AppColors.textMuted),
+                ),
+              ],
             ),
           ),
         ],

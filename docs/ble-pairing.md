@@ -46,10 +46,10 @@ Source: `lib/shared/constants/ble_constants.dart`. Never define UUIDs elsewhere.
 
 | Constant | Value |
 |----------|-------|
-| Service UUID | `4f434352-0001-0000-0000-000000000000` |
-| DeviceInfo char (read) | `4f434352-0001-0001-0000-000000000000` |
-| PairingKey char (write) | `4f434352-0001-0002-0000-000000000000` |
-| PairingResult char (notify) | `4f434352-0001-0003-0000-000000000000` |
+| Service UUID | `4f434352-0001-0000-1845-000000000000` |
+| DeviceInfo char (read) | `4f434352-0001-0001-1845-000000000000` |
+| PairingKey char (write) | `4f434352-0001-0002-1845-000000000000` |
+| PairingResult char (notify) | `4f434352-0001-0003-1845-000000000000` |
 | Company ID (adv) | `0xFFFF` |
 | Key length | 6 ASCII alphanumeric, case-sensitive |
 | Max wrong attempts | 3 → 30 s lockout |
@@ -79,6 +79,8 @@ Full protocol spec: `../docs/ble/` (repository sibling).
 **`maybePop` for auto-pop** — `PairingScreen` uses `Navigator.maybePop()` (no-op when root route) rather than `pop()` to avoid crash in tests and edge cases.
 
 **Device identity by service UUID, not name** — `BleConstants.deviceNamePrefix` (`openCCR-`) exists for human reference only; it is NOT used in scan or device-list filtering. `startScan` filters via `withServices: [serviceUuid]`; `_mapScanResult` validates by company ID `0xFFFF` + protocol version `0x01` from manufacturer data. `bondedDevices` uses `FlutterBluePlus.systemDevices([serviceUuid])`. Names may be freely user-configured.
+
+**`hasCompanion` flag three-way logic** — per spec, `has_companion` (adv flags bit 0) maps to three cases: `0` = never paired → show Pair button; `1` + resolved in knownDevices → skip scan section (shown in known-devices); `1` + NOT in knownDevices → bonded to a different app → show `_ForeignBondTile` (no Pair button). Explicitly overwriting foreign bonds without user consent is prohibited by spec.
 
 **Navigation is imperative** — uses `Navigator.push`. When `go_router` is introduced, replace device-tile tap and success auto-pop with typed routes.
 

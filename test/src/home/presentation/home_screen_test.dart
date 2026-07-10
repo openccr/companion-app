@@ -156,6 +156,31 @@ void main() {
           find.byKey(HomeScreenKeys.pairButton(_fakeDevice.id)), findsNothing);
     });
 
+    testWidgets(
+        'device paired with different app — shows foreign bond tile, no Pair button',
+        (tester) async {
+      final foreignDevice = BleDevice(
+        id: '77:88:99:AA:BB:CC',
+        name: 'MyCustomName',
+        rssi: -65,
+        hasCompanion: true, // bonded elsewhere — not in knownDevices
+      );
+      await tester.pumpWidget(
+        _wrap(scanState: BleScanScanning(devices: [foreignDevice])),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(HomeScreenKeys.foreignBondTile(foreignDevice.id)),
+        findsOneWidget,
+      );
+      expect(find.text('Paired with a different app'), findsOneWidget);
+      expect(
+        find.byKey(HomeScreenKeys.pairButton(foreignDevice.id)),
+        findsNothing,
+      );
+    });
+
     testWidgets('permission denied — shows permission banner', (tester) async {
       await tester.pumpWidget(
         _wrap(scanState: const BleScanPermissionDenied()),
