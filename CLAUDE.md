@@ -45,7 +45,7 @@ iOS / macOS / Windows native builds are the only exception (Apple/MS restriction
 | Text styles | `lib/shared/theme/app_text_styles.dart` |
 | Spacing | `lib/shared/theme/app_spacing.dart` |
 | Theme assembly | `lib/shared/theme/app_theme.dart` |
-| BLE constants | `lib/shared/constants/` (TBD) |
+| BLE constants | `lib/shared/constants/ble_constants.dart` |
 
 ## Reference Docs
 
@@ -55,3 +55,4 @@ iOS / macOS / Windows native builds are the only exception (Apple/MS restriction
 | Architecture, packages, naming, code gen | [`docs/architecture.md`](docs/architecture.md) |
 | Testing rules and required coverage | [`docs/testing.md`](docs/testing.md) |
 | UI design tokens and component patterns | [`docs/visual-standards.md`](docs/visual-standards.md) |
+| BLE scanning, pairing, protocol — implementation & downstream deps | [`docs/ble-pairing.md`](docs/ble-pairing.md) |
