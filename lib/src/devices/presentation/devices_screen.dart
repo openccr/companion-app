@@ -246,8 +246,8 @@ class _PairedCard extends StatelessWidget {
                         if (!device.synced) ...[
                           const SizedBox(width: AppSpacing.xs),
                           Container(
-                            width: 8,
-                            height: 8,
+                            width: AppSpacing.sm,
+                            height: AppSpacing.sm,
                             decoration: const BoxDecoration(
                               color: AppColors.caution,
                               shape: BoxShape.circle,

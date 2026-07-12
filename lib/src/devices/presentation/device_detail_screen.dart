@@ -181,7 +181,7 @@ class _StatusHeader extends StatelessWidget {
                 connected
                     ? Icons.bluetooth_connected
                     : Icons.bluetooth_disabled,
-                size: 40,
+                size: AppSpacing.xl,
                 color: connected ? AppColors.ocean : AppColors.textMuted,
               ),
               const SizedBox(width: AppSpacing.base),
