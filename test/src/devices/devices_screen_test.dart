@@ -60,7 +60,7 @@ void main() {
 
   testWidgets('connected paired device shows battery icon', (tester) async {
     await tester.pumpWidget(_wrap());
-    expect(find.byIcon(Icons.battery_full), findsWidgets);
+    expect(find.byIcon(Icons.battery_full), findsOneWidget);
   });
 
   testWidgets('nearby shows scanning spinner when no devices found',

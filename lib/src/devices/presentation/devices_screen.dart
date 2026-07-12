@@ -160,7 +160,7 @@ class _NearbyMessage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 32, color: AppColors.textMuted),
+            Icon(icon, size: AppSpacing.xl, color: AppColors.textMuted),
             const SizedBox(height: AppSpacing.sm),
             Text(
               message,
@@ -232,7 +232,7 @@ class _PairedCard extends StatelessWidget {
               else
                 const Icon(
                   Icons.bluetooth_disabled,
-                  size: 32,
+                  size: AppSpacing.xl,
                   color: AppColors.textMuted,
                 ),
               const SizedBox(width: AppSpacing.md),
@@ -344,16 +344,12 @@ class _BatteryIcon extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Icon(Icons.battery_full, size: 32, color: _color),
+        Icon(Icons.battery_full, size: AppSpacing.xl, color: _color),
         Positioned(
-          bottom: 5,
+          bottom: AppSpacing.xs,
           child: Text(
             '$percent%',
-            style: const TextStyle(
-              fontSize: 8,
-              fontWeight: FontWeight.w700,
-              color: AppColors.bg,
-            ),
+            style: AppTextStyles.badge.copyWith(color: AppColors.bg),
           ),
         ),
       ],
