@@ -35,41 +35,15 @@ abstract final class HomeScreenKeys {
       ValueKey<String>('home_foreign_bond_tile_$id');
 }
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final Map<String, bool> _connecting = {};
-  final Map<String, String?> _connectError = {};
-
-  Future<void> _connect(String deviceId) async {
-    setState(() {
-      _connecting[deviceId] = true;
-      _connectError[deviceId] = null;
-    });
-    try {
-      await ref.read(bleRepositoryProvider).connect(deviceId);
-      if (mounted) setState(() => _connecting[deviceId] = false);
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _connecting[deviceId] = false;
-          _connectError[deviceId] = e.toString();
-        });
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final knownAsync = ref.watch(knownDevicesProvider);
     final scanState = ref.watch(bleScanProvider);
+    final connectionState = ref.watch(bleConnectionProvider);
 
-    // IDs of known devices — used to filter them out of scan results.
     final knownIds = knownAsync.valueOrNull?.map((d) => d.id).toSet() ?? {};
 
     return Scaffold(
@@ -83,9 +57,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const _HeroSection(),
             _KnownDevicesSection(
               knownAsync: knownAsync,
-              connecting: _connecting,
-              connectError: _connectError,
-              onConnect: _connect,
+              connectionState: connectionState,
+              onConnect: (id) =>
+                  ref.read(bleConnectionProvider.notifier).connect(id),
             ),
             const Divider(color: AppColors.border, height: 1),
             _ScanningSection(
@@ -241,15 +215,13 @@ class _GridPainter extends CustomPainter {
 class _KnownDevicesSection extends StatelessWidget {
   const _KnownDevicesSection({
     required this.knownAsync,
-    required this.connecting,
-    required this.connectError,
+    required this.connectionState,
     required this.onConnect,
   });
 
   final AsyncValue<List<BleDevice>> knownAsync;
-  final Map<String, bool> connecting;
-  final Map<String, String?> connectError;
-  final Future<void> Function(String deviceId) onConnect;
+  final Map<String, BleConnectionStatus> connectionState;
+  final void Function(String deviceId) onConnect;
 
   @override
   Widget build(BuildContext context) {
@@ -289,8 +261,7 @@ class _KnownDevicesSection extends StatelessWidget {
                     .map(
                       (d) => _KnownDeviceTile(
                         device: d,
-                        isConnecting: connecting[d.id] ?? false,
-                        error: connectError[d.id],
+                        status: connectionState[d.id],
                         onConnect: () => onConnect(d.id),
                       ),
                     )
@@ -307,18 +278,19 @@ class _KnownDevicesSection extends StatelessWidget {
 class _KnownDeviceTile extends StatelessWidget {
   const _KnownDeviceTile({
     required this.device,
-    required this.isConnecting,
-    required this.error,
+    required this.status,
     required this.onConnect,
   });
 
   final BleDevice device;
-  final bool isConnecting;
-  final String? error;
+  final BleConnectionStatus? status;
   final VoidCallback onConnect;
 
   @override
   Widget build(BuildContext context) {
+    final isConnecting = status?.isConnecting ?? false;
+    final error = status?.error;
+
     return Container(
       key: HomeScreenKeys.knownDeviceTile(device.id),
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -338,7 +310,7 @@ class _KnownDeviceTile extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: AppSpacing.xs),
                     child: Text(
-                      error!,
+                      error,
                       style: AppTextStyles.labelSm
                           .copyWith(color: AppColors.warning),
                     ),
@@ -452,8 +424,6 @@ class _ScanResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nonKnown = devices.where((d) => !knownIds.contains(d.id)).toList();
-    // Split per spec: hasCompanion=0 → pair flow; hasCompanion=1 (not bonded
-    // to this app) → foreign bond warning (do not offer Pair button).
     final toNewPair = nonKnown.where((d) => !d.hasCompanion).toList();
     final foreignBond = nonKnown.where((d) => d.hasCompanion).toList();
 

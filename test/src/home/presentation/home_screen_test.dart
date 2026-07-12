@@ -25,6 +25,7 @@ final _fakeDevice = BleDevice(
 Widget _wrap({
   List<BleDevice> knownDevices = const [],
   BleScanState scanState = const BleScanIdle(),
+  Map<String, BleConnectionStatus> connectionState = const {},
 }) {
   final mockRepo = MockBleRepository();
   when(() => mockRepo.stopScan()).thenAnswer((_) async {});
@@ -43,6 +44,9 @@ Widget _wrap({
           deviceId,
           const BlePairingConnecting(),
         ),
+      ),
+      bleConnectionProvider.overrideWith(
+        (ref) => BleConnectionNotifier.initialState(mockRepo, connectionState),
       ),
     ],
     child: MaterialApp(theme: AppTheme.light(), home: const HomeScreen()),
@@ -98,6 +102,38 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('Connect button is disabled while connecting', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          knownDevices: [_fakeDevice],
+          connectionState: {
+            _fakeDevice.id: const BleConnectionStatus(isConnecting: true),
+          },
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      final button = tester.widget<ElevatedButton>(
+        find.byKey(HomeScreenKeys.connectButton(_fakeDevice.id)),
+      );
+      expect(button.onPressed, isNull);
+    });
+
+    testWidgets('error text shown when connection failed', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          knownDevices: [_fakeDevice],
+          connectionState: {
+            _fakeDevice.id: const BleConnectionStatus(error: 'adapter off'),
+          },
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('adapter off'), findsOneWidget);
+    });
   });
 
   group('HomeScreen — scanning', () {
@@ -134,7 +170,6 @@ void main() {
     });
 
     testWidgets('known device excluded from scan results', (tester) async {
-      // Same ID in both known and scan — should NOT appear in scan section.
       final scanDevice = BleDevice(
         id: _fakeDevice.id,
         name: _fakeDevice.name,
@@ -147,8 +182,6 @@ void main() {
           scanState: BleScanScanning(devices: [scanDevice]),
         ),
       );
-      // Two pumps: first frame + FutureProvider resolve.
-      // Cannot use pumpAndSettle — BleScanScanning shows a continuous CPI.
       await tester.pump();
       await tester.pump();
 
@@ -163,7 +196,7 @@ void main() {
         id: '77:88:99:AA:BB:CC',
         name: 'MyCustomName',
         rssi: -65,
-        hasCompanion: true, // bonded elsewhere — not in knownDevices
+        hasCompanion: true,
       );
       await tester.pumpWidget(
         _wrap(scanState: BleScanScanning(devices: [foreignDevice])),
