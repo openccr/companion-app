@@ -149,7 +149,9 @@ class _ConfigRow extends StatelessWidget {
           subtitle,
           style: AppTextStyles.bodySm.copyWith(color: AppColors.textMuted),
         ),
-        trailing: onTap != null ? const Icon(Icons.chevron_right) : null,
+        trailing: onTap != null
+            ? const Icon(Icons.chevron_right, color: AppColors.ocean)
+            : null,
         onTap: onTap,
       ),
     );
