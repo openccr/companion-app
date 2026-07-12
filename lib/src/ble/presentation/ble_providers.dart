@@ -178,3 +178,57 @@ final blePairingProvider = StateNotifierProvider.autoDispose
     deviceId,
   ),
 );
+
+// ---------------------------------------------------------------------------
+// Connection
+// ---------------------------------------------------------------------------
+
+/// Per-device connection attempt state used by [BleConnectionNotifier].
+class BleConnectionStatus {
+  const BleConnectionStatus({this.isConnecting = false, this.error});
+
+  /// `true` while a `connect()` call is in flight.
+  final bool isConnecting;
+
+  /// Non-null if the last `connect()` attempt threw.
+  final String? error;
+}
+
+class BleConnectionNotifier
+    extends StateNotifier<Map<String, BleConnectionStatus>> {
+  BleConnectionNotifier(this._repo) : super(const {});
+
+  /// For testing only — injects an initial state without performing BLE ops.
+  @visibleForTesting
+  BleConnectionNotifier.initialState(
+    this._repo,
+    Map<String, BleConnectionStatus> initial,
+  ) : super(initial);
+
+  final BleRepository _repo;
+
+  Future<void> connect(String deviceId) async {
+    state = {
+      ...state,
+      deviceId: const BleConnectionStatus(isConnecting: true),
+    };
+    try {
+      await _repo.connect(deviceId);
+      if (mounted) {
+        state = {...state, deviceId: const BleConnectionStatus()};
+      }
+    } catch (e) {
+      if (mounted) {
+        state = {
+          ...state,
+          deviceId: BleConnectionStatus(error: e.toString()),
+        };
+      }
+    }
+  }
+}
+
+final bleConnectionProvider = StateNotifierProvider<BleConnectionNotifier,
+    Map<String, BleConnectionStatus>>(
+  (ref) => BleConnectionNotifier(ref.watch(bleRepositoryProvider)),
+);
