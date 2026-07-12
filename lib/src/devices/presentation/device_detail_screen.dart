@@ -38,13 +38,12 @@ class DeviceDetailScreen extends StatelessWidget {
   final String? lastSeen;
 
   Future<void> _showRenameDialog(BuildContext context) async {
-    final controller = TextEditingController(text: name);
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Rename Device'),
-        content: TextField(
-          controller: controller,
+        content: TextFormField(
+          initialValue: name,
           autofocus: true,
           decoration: const InputDecoration(labelText: 'Device name'),
         ),

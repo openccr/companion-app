@@ -88,4 +88,19 @@ void main() {
     await tester.pumpWidget(_wrapDisconnected());
     expect(find.text('Last seen: 3 days ago'), findsOneWidget);
   });
+
+  testWidgets('tapping rename button opens rename dialog', (tester) async {
+    await tester.pumpWidget(_wrap());
+    await tester.tap(find.byKey(DeviceDetailScreenKeys.renameButton));
+    await tester.pumpAndSettle();
+    expect(find.text('Rename Device'), findsOneWidget);
+  });
+
+  testWidgets('disconnected status header does not navigate to LiveDataScreen',
+      (tester) async {
+    await tester.pumpWidget(_wrapDisconnected());
+    await tester.tap(find.byKey(DeviceDetailScreenKeys.statusHeader));
+    await tester.pumpAndSettle();
+    expect(find.byKey(LiveDataScreenKeys.po2Display), findsNothing);
+  });
 }
