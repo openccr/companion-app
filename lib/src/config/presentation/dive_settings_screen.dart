@@ -290,7 +290,7 @@ class _GfCard extends StatelessWidget {
 
 // ── Internal widgets ──────────────────────────────────────────────────────────
 
-class _WheelPicker extends StatelessWidget {
+class _WheelPicker extends StatefulWidget {
   const _WheelPicker({
     required this.pickerKey,
     required this.values,
@@ -306,13 +306,33 @@ class _WheelPicker extends StatelessWidget {
   final String? label;
 
   @override
+  State<_WheelPicker> createState() => _WheelPickerState();
+}
+
+class _WheelPickerState extends State<_WheelPicker> {
+  late final FixedExtentScrollController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        FixedExtentScrollController(initialItem: widget.selectedIndex);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (label != null) ...[
+        if (widget.label != null) ...[
           Text(
-            label!,
+            widget.label!,
             style: AppTextStyles.labelSm,
           ),
           const SizedBox(height: AppSpacing.xs),
@@ -321,13 +341,12 @@ class _WheelPicker extends StatelessWidget {
           height: AppSpacing.xxl * 2,
           width: AppSpacing.xxl * 1.5,
           child: CupertinoPicker(
-            key: pickerKey,
-            scrollController:
-                FixedExtentScrollController(initialItem: selectedIndex),
+            key: widget.pickerKey,
+            scrollController: _controller,
             itemExtent: AppSpacing.xl,
-            onSelectedItemChanged: onChanged,
+            onSelectedItemChanged: widget.onChanged,
             children: [
-              for (final v in values)
+              for (final v in widget.values)
                 Center(
                   child: Text(
                     v.toStringAsFixed(2),
