@@ -184,6 +184,7 @@ final blePairingProvider = StateNotifierProvider.autoDispose
 // ---------------------------------------------------------------------------
 
 /// Per-device connection attempt state used by [BleConnectionNotifier].
+@immutable
 class BleConnectionStatus {
   const BleConnectionStatus({this.isConnecting = false, this.error});
 

@@ -18,7 +18,7 @@ Implemented. Covers discovery → scan → pair only. Post-pairing data services
 | `lib/src/ble/domain/ble_pairing_state.dart` | Sealed pairing FSM states |
 | `lib/src/ble/domain/ble_repository.dart` | Abstract boundary — mock target for tests |
 | `lib/src/ble/data/ble_repository_impl.dart` | flutter_blue_plus implementation; platform code confined here |
-| `lib/src/ble/presentation/ble_providers.dart` | Riverpod providers + `BleScanNotifier` + `BlePairingNotifier` |
+| `lib/src/ble/presentation/ble_providers.dart` | Riverpod providers + `BleScanNotifier` + `BlePairingNotifier` + `BleConnectionNotifier` |
 | `lib/src/ble/presentation/device_list_screen.dart` | Scan UI (`DeviceListScreenKeys`) |
 | `lib/src/ble/presentation/pairing_screen.dart` | Pairing UI (`PairingScreenKeys`) |
 
