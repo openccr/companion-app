@@ -52,5 +52,12 @@ coverage/
 Thumbs.db
 desktop.ini
 
-# Claude Code
+# Claude Code / Superpowers
 .claude/
+skills-lock.json
+docs/superpowers/
+docs/mockups/
+
+# Git worktrees
+.worktrees/
+worktrees/
