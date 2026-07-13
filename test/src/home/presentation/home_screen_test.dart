@@ -130,8 +130,7 @@ void main() {
           },
         ),
       );
-      await tester.pump();
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('adapter off'), findsOneWidget);
     });
   });
